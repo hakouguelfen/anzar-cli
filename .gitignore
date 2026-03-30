@@ -1,0 +1,8 @@
+test.db
+migrations/
+run.sh
+
+
+# Added by cargo
+
+/target
