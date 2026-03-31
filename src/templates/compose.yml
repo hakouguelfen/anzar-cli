@@ -1,50 +1,49 @@
-name: {{NAME}} 
+name: {{NAME}}
 
 services:
-  server:
+  auth:
     image: hakouguelfen79/anzar
-    pull_policy: never
+    restart: always
     ports:
       - 3000:3000
     user: 1000:1000
     volumes:
-      - ./anzar.yml/:/app/anzar.yml
-
+      - ./anzar.yml:/app/anzar.yml
     depends_on:
-      # - memcached
       db:
         condition: service_healthy
-    # networks:
-    #   - app-network
+      cache:
+        condition: service_healthy
 
-  memcached:
+  cache:
     image: memcached:1.6-alpine
+    restart: always
     ports:
       - "11211:11211"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "11211"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     command:
       - --conn-limit=1024
       - --memory-limit=64
       - --threads=4
-    # networks:
-    #   - app-network
 
   db:
-    image: mongo:latest
+    image: mongo:8.0
+    restart: always
     ports:
-      - 27017:27017
-    volumes:
-      - jstest:/data/db
+      - "27017:27017"
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
-    # networks:
-    #   - app-network
+    start_period: 30s
+    volumes:
+      - {{NAME}}_volume:/data/db
 
 volumes:
   {{NAME}}_volume:
 
-networks:
-  app-network:
-    driver: bridge

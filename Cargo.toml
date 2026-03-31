@@ -2,7 +2,7 @@
 edition = "2024"
 rust-version = "1.85"
 
-name = "anzar-cli"
+name = "anzar"
 description = "Anzar is a lightweight authentication and authorization framework that runs as a separate microservice"
 readme = "README.md"
 license = "GPL-3.0"
