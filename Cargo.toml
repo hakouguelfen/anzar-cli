@@ -6,16 +6,18 @@ name = "anzar"
 description = "Anzar is a lightweight authentication and authorization framework that runs as a separate microservice"
 readme = "README.md"
 license = "GPL-3.0"
-version = "0.1.0"
+version = "0.2.7"
 authors = ["Hakou Guelfen <hakoudev@gmail.com>"]
 homepage = "https://anzar_software.gitlab.io/docs"
-repository = "https://gitlab.com/anzar_software/cli"
-categories = ["authentication", "web-programming", "network-programming"]
+# repository = "https://gitlab.com/anzar_software/cli"
+repository = "https://github.com/anzar-software/anzar-cli"
+
+categories = ["authentication", "web-programming", "network-programming", "command-line-utilities"]
 keywords = [
-  "Software Development",
   "Authentication",
   "Authorization",
-  "MicroService"
+  "MicroService",
+  "cli"
 ]
 
 [dependencies]
@@ -23,8 +25,15 @@ keywords = [
 clap = { version = "4.6.0", features = ["derive"] }
 console = "0.16.3"
 dialoguer = "0.12.0"
+minreq = "2.14.1"
 owo-colors = "4.3.0"
 
 # Serde
 serde = { version = "1.0.228", features = ["derive"] }
 serde_yaml = "0.9.34"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
+

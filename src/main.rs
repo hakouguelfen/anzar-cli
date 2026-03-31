@@ -16,15 +16,25 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    #[command(about = "Initialize Anzar for your project", long_about = None)]
     Init {
         #[arg(short, long)]
         name: Option<String>,
     },
+
+    #[command(about = "Check current configuration and setup", long_about = None)]
     Check {
         #[arg(short, long)]
         verbose: bool,
     },
+
+    #[command(about = "Show Anzar service status", long_about = None)]
+    Status {},
+
+    #[command(about = "Generate database schemas", long_about = None)]
     Generate {},
+
+    #[command(about = "Apply database migrations", long_about = None)]
     Migrate {
         #[arg(short, long)]
         name: Option<String>,
@@ -37,6 +47,7 @@ fn main() {
     match cli.command {
         Commands::Init { name } => commands::init::run(name),
         Commands::Check { verbose } => commands::check::run(verbose),
+        Commands::Status {} => commands::status::run(),
         Commands::Generate {} => todo!(),
         Commands::Migrate { name } => todo!(),
     }

@@ -1,0 +1,26 @@
+stages:
+  - release
+
+release:
+  stage: release
+  image: rust:latest        # ← use Rust image instead of goreleaser image
+  variables:
+    GIT_DEPTH: 0
+    # GITLAB_TOKEN: $CI_JOB_TOKEN  # ← add this
+    GITLAB_TOKEN: $RELEASE_TOKEN  # ← add this
+
+  before_script:
+    - wget -P /tmp https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz
+    - tar -xf /tmp/zig-linux-x86_64-0.13.0.tar.xz -C /tmp
+    - export PATH=/tmp/zig-linux-x86_64-0.13.0:$PATH
+    - zig version  # verify
+
+    - curl -sfL https://goreleaser.com/static/run -o /usr/local/bin/goreleaser
+    - chmod +x /usr/local/bin/goreleaser
+    - export PATH=$PATH:/usr/local/bin
+  script:
+    - export GITLAB_TOKEN=$RELEASE_TOKEN
+    - goreleaser release --clean
+  rules:
+    - if: $CI_COMMIT_TAG
+

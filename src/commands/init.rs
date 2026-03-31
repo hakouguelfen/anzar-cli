@@ -41,6 +41,7 @@ pub fn run(name: Option<String>) {
         .replace("{{CACHE_URI}}", &cache_uri)
         .replace("{{STRATEGY}}", &strategy.to_string());
 
+    println!();
     match fs::write("anzar.yml", config_content) {
         Ok(_) => println!("{} {}", "✓ Created".green().bold(), "anzar.yml".cyan()),
         Err(e) => eprintln!("{} {}", "✗ Failed to create file:".red().bold(), e),

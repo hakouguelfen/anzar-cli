@@ -1,0 +1,3 @@
+publish = true
+push = true
+push-remote = "gitlab"
