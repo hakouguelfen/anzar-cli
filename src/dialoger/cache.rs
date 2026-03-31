@@ -1,10 +1,10 @@
 use dialoguer::Select;
 
-use crate::models::cache::CacheDriver;
+use crate::{models::cache::CacheDriver, theme::theme};
 
 pub fn select_cache() -> (CacheDriver, String) {
     let caches: Vec<CacheDriver> = vec![CacheDriver::MemCached, CacheDriver::Redis];
-    let choice = Select::new()
+    let choice = Select::with_theme(&theme())
         .with_prompt("Select cache")
         .items(&caches)
         .default(0)

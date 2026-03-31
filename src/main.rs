@@ -3,6 +3,7 @@ use clap::{Parser, Subcommand};
 mod commands;
 mod dialoger;
 mod models;
+mod theme;
 
 #[derive(Parser)]
 #[command(name = "anzar")]

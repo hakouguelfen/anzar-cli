@@ -1,13 +1,22 @@
 use std::fs;
 
-use crate::dialoger::{cache::select_cache, database::select_database, strategy::select_strategy};
+use owo_colors::OwoColorize;
+
+use crate::{
+    dialoger::{cache::select_cache, database::select_database, strategy::select_strategy},
+    theme::theme,
+};
 
 const CONFIG_TEMPLATE: &str = include_str!("../templates/configuration.yml");
 const COMPOSE_TEMPLATE: &str = include_str!("../templates/compose.yml");
 
 pub fn run(name: Option<String>) {
     if !std::path::Path::new(".git").exists() {
-        eprintln!("Error: not a git repository. Run `git init` first.");
+        eprintln!(
+            "{} not a git repository. Run {} first.",
+            "Error:".red().bold(),
+            "`git init`".yellow()
+        );
         std::process::exit(1);
     }
 
@@ -15,7 +24,7 @@ pub fn run(name: Option<String>) {
     println!("Initializing project: {}", project_name);
     //
 
-    let name: String = dialoguer::Input::new()
+    let name: String = dialoguer::Input::with_theme(&theme())
         .with_prompt("Your app name?")
         .interact_text()
         .unwrap();
@@ -33,12 +42,12 @@ pub fn run(name: Option<String>) {
         .replace("{{STRATEGY}}", &strategy.to_string());
 
     match fs::write("anzar.yml", config_content) {
-        Ok(_) => println!("Created anzar.yml"),
-        Err(e) => eprintln!("Failed to create file: {}", e),
+        Ok(_) => println!("{} {}", "✓ Created".green().bold(), "anzar.yml".cyan()),
+        Err(e) => eprintln!("{} {}", "✗ Failed to create file:".red().bold(), e),
     }
 
-    match fs::write("docker-compose.yml", compose_content) {
-        Ok(_) => println!("Created docker-compose.yml"),
-        Err(e) => eprintln!("Failed to create file: {}", e),
+    match fs::write("compose.yml", compose_content) {
+        Ok(_) => println!("{} {}", "✓ Created".green().bold(), "compose.yml".cyan()),
+        Err(e) => eprintln!("{} {}", "✗ Failed to create file:".red().bold(), e),
     }
 }

@@ -1,6 +1,6 @@
 use dialoguer::Select;
 
-use crate::models::database::DatabaseDriver;
+use crate::{models::database::DatabaseDriver, theme::theme};
 
 pub fn select_database() -> (DatabaseDriver, String) {
     let databases: Vec<DatabaseDriver> = vec![
@@ -8,7 +8,7 @@ pub fn select_database() -> (DatabaseDriver, String) {
         DatabaseDriver::PostgreSQL,
         DatabaseDriver::SQLite,
     ];
-    let choice = Select::new()
+    let choice = Select::with_theme(&theme())
         .with_prompt("Select database")
         .items(&databases)
         .default(0)
