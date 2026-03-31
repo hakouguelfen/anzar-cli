@@ -24,6 +24,11 @@ enum Commands {
         #[arg(short, long)]
         verbose: bool,
     },
+    Generate {},
+    Migrate {
+        #[arg(short, long)]
+        name: Option<String>,
+    },
 }
 
 fn main() {
@@ -32,5 +37,7 @@ fn main() {
     match cli.command {
         Commands::Init { name } => commands::init::run(name),
         Commands::Check { verbose } => commands::check::run(verbose),
+        Commands::Generate {} => todo!(),
+        Commands::Migrate { name } => todo!(),
     }
 }

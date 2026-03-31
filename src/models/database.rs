@@ -1,6 +1,8 @@
 use std::fmt;
 
-#[derive(Debug, Default, Clone)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub enum DatabaseDriver {
     #[default]
     MongoDB,
