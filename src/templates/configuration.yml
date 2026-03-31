@@ -1,0 +1,98 @@
+# =============================================================================
+# API Configuration - REQUIRED
+# =============================================================================
+app:
+  environment: "development"  # development | staging | production
+  url: "http://localhost:3000"
+
+# =============================================================================
+# Database Configuration - REQUIRED
+# =============================================================================
+database:
+  driver: {{DATABASE_DRIVER}}
+  connection_string: {{DATABASE_URI}}
+  cache:
+    driver: {{CACHE_DRIVER}}
+    url: {{CACHE_URI}}
+
+# =============================================================================
+# Security Configuration - REQUIRED
+# =============================================================================
+security:
+  secret_key: "UPDATE_THIS_WITH_A_CPSR_CHARS"
+  headers:
+    - ["X-Content-Type-Options", "nosniff"]
+    - ["Content-Type", "application/json"]
+
+# =============================================================================
+# Authentication Configuration - OPTIONAL
+# =============================================================================
+auth:
+  strategy: {{STRATEGY}}
+
+  # jwt:
+  #   access_token_expires_in: 86400  # seconds (24 hours)
+  #   refresh_token_expires_in: 604800  # seconds (7 days)
+  #   algorithm: "HS256"
+  #   issuer: "http://locahost:3000"
+  #   audience: "web-app"
+  #
+  # session:
+  #   name: "id"
+  #   max_age: 3600
+  #   secure: true
+  #   http_only: true
+  #   same_site: "Strict"  # Strict | Lax | None
+  #
+  # email:
+  #  verification:
+  #     required: false
+  #     token_expires_in: 3600  # seconds (1 hour)
+  #     success_redirect: http://localhost:3000/auth/password/reset?status=success
+  #     error_redirect: http://localhost:3000/auth/password/reset?status=error
+  #
+  # password:
+  #   requirements:
+  #     min_length: 8
+  #     max_length: 128
+  #     require_uppercase: false
+  #     require_number: false
+  #     require_special_char: false
+  #   reset:
+  #     token_expires_in: 3600  # seconds (1 hour)
+  #     success_redirect: http://localhost:3000/auth/password/reset?status=success
+  #     error_redirect: http://localhost:3000/auth/password/reset?status=error
+  #   security:
+  #     max_failed_attempts: 5
+  #     lockout_duration: 1800  # seconds (30 minutes) - optional
+
+# =============================================================================
+# Server Configuration - OPTIONAL
+# =============================================================================
+# server:
+  # https:
+  #   enabled: false
+  #   port: 443
+  #   cert_path: "cert/cert.pem"
+  #   key_path: "cert/key.pem"
+  
+  # CORS Configuration
+  # cors:
+  #   enabled: true
+  #   allowed_origins:
+  #     - "http://localhost:3000"
+  #     - "http://127.0.0.1:3000"
+  #     - "https://localhost"
+  #     - "https://aznar.dz"
+  #   allowed_methods:
+  #     - "GET"
+  #     - "POST"
+  #     - "PUT"
+  #     - "DELETE"
+  #     - "OPTIONS"
+  #   allowed_headers:
+  #     - "authorization"
+  #     - "content-type"
+  #     - "accept"
+  #   allow_credentials: true
+  #   max_age: 3600

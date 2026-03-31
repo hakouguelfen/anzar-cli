@@ -1,6 +1,8 @@
 test.db
 migrations/
 run.sh
+anzar.yml
+docker-compose.yml
 
 
 # Added by cargo
