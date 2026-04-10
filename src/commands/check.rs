@@ -2,14 +2,17 @@ use owo_colors::OwoColorize;
 use std::fs;
 use std::path::Path;
 
+use crate::error::Result;
 use crate::models::configuration::AnzarConfiguration;
 
-pub fn run(verbose: bool) {
+pub fn run(verbose: bool) -> Result<()> {
     println!("{}", "Running checks...".dimmed());
 
     check_git();
     check_yaml(verbose);
     check_compose(verbose);
+
+    Ok(())
 }
 
 fn check_git() {

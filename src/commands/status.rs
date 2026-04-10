@@ -1,6 +1,7 @@
+use crate::error::Result;
 use owo_colors::OwoColorize;
 
-pub fn run() {
+pub fn run() -> Result<()> {
     const BASE_URL: &str = "http://localhost:3000";
     println!("{}", "Checking Anzar service...".bold());
 
@@ -39,4 +40,6 @@ pub fn run() {
             );
         }
     }
+
+    Ok(())
 }

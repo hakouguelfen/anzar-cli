@@ -19,7 +19,7 @@ pub fn select_database() -> (DatabaseDriver, String) {
     let uri = match db {
         DatabaseDriver::MongoDB => "mongodb://db:27017/default",
         DatabaseDriver::PostgreSQL => todo!(),
-        DatabaseDriver::SQLite => "sqlite::memory",
+        DatabaseDriver::SQLite => "file:default.db",
     };
 
     (db, uri.to_string())

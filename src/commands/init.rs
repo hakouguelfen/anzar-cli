@@ -1,3 +1,4 @@
+use crate::error::Result;
 use std::fs;
 
 use dialoguer::Confirm;
@@ -14,7 +15,7 @@ const SESSION_AUTH: &str = include_str!("../templates/auth/session.yml");
 const CONFIG_TEMPLATE: &str = include_str!("../templates/configuration.yml");
 const COMPOSE_TEMPLATE: &str = include_str!("../templates/compose.yml");
 
-pub fn run(app_name: Option<String>) {
+pub fn run(app_name: Option<String>) -> Result<()> {
     if !std::path::Path::new(".git").exists() {
         eprintln!(
             "{} not a git repository. Run {} first.",
@@ -25,7 +26,9 @@ pub fn run(app_name: Option<String>) {
     }
 
     build_compose(app_name);
-    build_anzar()
+    build_anzar();
+
+    Ok(())
 }
 
 fn build_compose(app_name: Option<String>) {

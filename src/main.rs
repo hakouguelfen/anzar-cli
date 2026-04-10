@@ -1,7 +1,9 @@
 use clap::{Parser, Subcommand};
+use error::Result;
 
 mod commands;
 mod dialoger;
+mod error;
 mod models;
 mod theme;
 
@@ -41,14 +43,15 @@ enum Commands {
     },
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
         Commands::Init { name } => commands::init::run(name),
         Commands::Check { verbose } => commands::check::run(verbose),
         Commands::Status {} => commands::status::run(),
-        Commands::Generate {} => todo!(),
-        Commands::Migrate { name } => todo!(),
+        Commands::Generate {} => commands::generate::run(),
+        Commands::Migrate { name } => commands::migrate::run().await,
     }
 }
