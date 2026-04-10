@@ -1,3 +1,4 @@
+use sqlx::migrate::MigrateError;
 use std::path::PathBuf;
 use thiserror::Error;
 
@@ -34,6 +35,9 @@ pub enum Error {
     /// directly to the inner error, so the user sees serde's own message.
     #[error(transparent)]
     Yaml(#[from] serde_yaml::Error),
+
+    #[error(transparent)]
+    Sqlx(#[from] MigrateError),
 
     // ── Network / HTTP ────────────────────────────────────────────────────────
     /// HTTP request failure (e.g. reqwest). `#[source]` wires up

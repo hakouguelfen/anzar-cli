@@ -6,7 +6,7 @@ use crate::{
     },
 };
 use owo_colors::OwoColorize;
-use sqlx::{Executor, Pool, Sqlite, SqlitePool};
+use sqlx::{Executor, Pool, Sqlite, SqlitePool, migrate::Migrator};
 
 pub async fn run() -> Result<()> {
     let config = support::load_config()?;
@@ -25,7 +25,18 @@ pub async fn run() -> Result<()> {
 
     support::print_result("Running migrations", true, None);
 
-    match sqlx::migrate!("./migrations").run(&db).await {
+    let path = std::path::Path::new("migrations");
+    if !path.exists() {
+        support::print_result(
+            "Migrations already exist",
+            false,
+            Some("delete existing anzar_create_* files to regenerate"),
+        );
+        return Ok(());
+    }
+
+    let migrator = Migrator::new(path).await?;
+    match migrator.run(&db).await {
         Ok(_) => {
             support::print_result("Migrations applied", true, None);
             println!();
