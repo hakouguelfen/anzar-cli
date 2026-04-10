@@ -2,7 +2,7 @@
 CREATE TABLE session (
     id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
     userId TEXT NOT NULL,
-    issuedAt DATETIME NOT NULL DEFAULT (datetime('now'))
+    issuedAt DATETIME NOT NULL DEFAULT (datetime('now')),
     expiresAt DATETIME,
     usedAt DATETIME,
     token TEXT NOT NULL,

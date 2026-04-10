@@ -4,7 +4,7 @@ CREATE TABLE account (
     userId TEXT NOT NULL,
     password TEXT NOT NULL,
     locked BOOLEAN NOT NULL DEFAULT 0,
-    createdAt DATETIME NOT NULL DEFAULT (datetime('now'))
+    createdAt DATETIME NOT NULL DEFAULT (datetime('now')),
 
     FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
 );

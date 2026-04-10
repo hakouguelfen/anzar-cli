@@ -5,7 +5,11 @@ use crate::{
         constants, support,
     },
 };
-use std::{fs, path::Path};
+use std::{
+    fs,
+    path::Path,
+    sync::atomic::{AtomicU16, Ordering},
+};
 
 use owo_colors::OwoColorize;
 
@@ -42,8 +46,6 @@ pub fn run() -> Result<()> {
         return Ok(());
     }
 
-    let timestamp = chrono::Utc::now().format("%Y%m%d%H%M%S");
-
     let files = match config.auth.strategy {
         AuthStrategy::Session => constants::SESSION_TABLES,
         AuthStrategy::Jwt => constants::JWT_TABLES,
@@ -51,6 +53,10 @@ pub fn run() -> Result<()> {
 
     println!();
     for (content, name) in files {
+        static COUNTER: AtomicU16 = AtomicU16::new(0);
+        let cnt = COUNTER.fetch_add(1, Ordering::Relaxed) % 10000;
+        let timestamp = format!("{}{:04}", chrono::Utc::now().format("%Y%m%d%H%M%S"), cnt);
+
         let filename = format!("{}/{}_{}.sql", migrations_dir.display(), timestamp, name);
         match fs::write(&filename, content) {
             Ok(_) => println!("{} {}", "✓ Created".green().bold(), filename.cyan()),
