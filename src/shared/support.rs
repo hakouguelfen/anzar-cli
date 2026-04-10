@@ -1,8 +1,10 @@
 use owo_colors::OwoColorize;
 use std::{fs, path::Path};
 
-use crate::error::{Error, Result};
-use crate::models::configuration::AnzarConfiguration;
+use crate::{
+    error::{Error, Result},
+    shared::configuration::AnzarConfiguration,
+};
 
 pub fn load_config() -> Result<AnzarConfiguration> {
     let candidates = ["anzar.yaml", "anzar.yml"];

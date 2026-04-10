@@ -1,0 +1,49 @@
+name: {{NAME}}
+
+services:
+  auth:
+    image: hakouguelfen79/anzar
+    restart: always
+    ports:
+      - 3000:3000
+    user: 1000:1000
+    volumes:
+      - ./anzar.yml:/app/anzar.yml
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+
+  db:
+    image: mongo:8.0
+    restart: always
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    start_period: 30s
+    volumes:
+      - {{NAME}}_volume:/data/db
+
+  cache:
+    image: memcached:1.6-alpine
+    restart: always
+    ports:
+      - "11211:11211"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "11211"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+
+volumes:
+  {{NAME}}_volume:
+

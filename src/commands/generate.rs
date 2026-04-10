@@ -1,21 +1,13 @@
 use crate::{
-    commands::support,
     error::Result,
-    models::{database::DatabaseDriver, strategy::AuthStrategy},
+    shared::{
+        configuration::{AuthStrategy, DatabaseDriver},
+        constants, support,
+    },
 };
 use std::{fs, path::Path};
 
 use owo_colors::OwoColorize;
-
-const CREATE_USERS: &str = include_str!("../templates/db/sqlite/create_users.sql");
-const CREATE_ACCOUNTS: &str = include_str!("../templates/db/sqlite/create_accounts.sql");
-const CREATE_SESSIONS: &str = include_str!("../templates/db/sqlite/create_sessions.sql");
-const CREATE_REFRESH_TOKENS: &str =
-    include_str!("../templates/db/sqlite/create_refresh_tokens.sql");
-const CREATE_PASSWORD_RESET_TOKENS: &str =
-    include_str!("../templates/db/sqlite/create_password_reset_tokens.sql");
-const CREATE_EMAIL_VERIFICATION_TOKENS: &str =
-    include_str!("../templates/db/sqlite/create_email_verification_tokens.sql");
 
 pub fn run() -> Result<()> {
     let config = support::load_config()?;
@@ -53,21 +45,8 @@ pub fn run() -> Result<()> {
     let timestamp = chrono::Utc::now().format("%Y%m%d%H%M%S");
 
     let files = match config.auth.strategy {
-        AuthStrategy::Session => vec![
-            (CREATE_USERS, "anzar_create_users"),
-            (CREATE_ACCOUNTS, "anzar_create_accounts"),
-            (CREATE_SESSIONS, "anzar_create_sessions"),
-            (CREATE_REFRESH_TOKENS, "anzar_create_refresh_tokens"),
-            (
-                CREATE_PASSWORD_RESET_TOKENS,
-                "anzar_create_password_reset_tokens",
-            ),
-            (
-                CREATE_EMAIL_VERIFICATION_TOKENS,
-                "anzar_create_email_verification_tokens",
-            ),
-        ],
-        AuthStrategy::Jwt => vec![(CREATE_USERS, "myauth_create_users")],
+        AuthStrategy::Session => constants::SESSION_TABLES,
+        AuthStrategy::Jwt => constants::JWT_TABLES,
     };
 
     println!();

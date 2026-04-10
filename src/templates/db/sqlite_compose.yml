@@ -10,8 +10,6 @@ services:
     volumes:
       - ./anzar.yml:/app/anzar.yml
     depends_on:
-      db:
-        condition: service_healthy
       cache:
         condition: service_healthy
 
@@ -29,20 +27,6 @@ services:
       - --conn-limit=1024
       - --memory-limit=64
       - --threads=4
-
-  db:
-    image: mongo:8.0
-    restart: always
-    ports:
-      - "27017:27017"
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    start_period: 30s
-    volumes:
-      - {{NAME}}_volume:/data/db
 
 volumes:
   {{NAME}}_volume:

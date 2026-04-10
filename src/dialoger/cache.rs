@@ -1,6 +1,5 @@
+use crate::{shared::configuration::CacheDriver, theme::theme};
 use dialoguer::Select;
-
-use crate::{models::cache::CacheDriver, theme::theme};
 
 pub fn select_cache() -> (CacheDriver, String) {
     let caches: Vec<CacheDriver> = vec![CacheDriver::MemCached, CacheDriver::Redis];

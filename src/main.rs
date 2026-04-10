@@ -4,7 +4,7 @@ use error::Result;
 mod commands;
 mod dialoger;
 mod error;
-mod models;
+mod shared;
 mod theme;
 
 #[derive(Parser)]

@@ -3,7 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use crate::error::Result;
-use crate::models::configuration::AnzarConfiguration;
+use crate::shared::configuration::AnzarConfiguration;
 
 pub fn run(verbose: bool) -> Result<()> {
     println!("{}", "Running checks...".dimmed());

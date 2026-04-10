@@ -1,6 +1,5 @@
+use crate::{shared::configuration::DatabaseDriver, theme::theme};
 use dialoguer::Select;
-
-use crate::{models::database::DatabaseDriver, theme::theme};
 
 pub fn select_database() -> (DatabaseDriver, String) {
     let databases: Vec<DatabaseDriver> = vec![

@@ -1,6 +1,5 @@
+use crate::{shared::configuration::AuthStrategy, theme::theme};
 use dialoguer::Select;
-
-use crate::{models::strategy::AuthStrategy, theme::theme};
 
 pub fn select_strategy() -> AuthStrategy {
     let strategies: Vec<AuthStrategy> = vec![AuthStrategy::Session, AuthStrategy::Jwt];

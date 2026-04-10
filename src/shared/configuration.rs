@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
-
-use crate::models::{cache::CacheDriver, database::DatabaseDriver, strategy::AuthStrategy};
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct AnzarConfiguration {
@@ -31,12 +30,44 @@ pub struct Database {
     pub connection_string: String,
     pub cache: Cache,
 }
+
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
+pub enum DatabaseDriver {
+    #[default]
+    MongoDB,
+    PostgreSQL,
+    SQLite,
+}
+impl fmt::Display for DatabaseDriver {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DatabaseDriver::MongoDB => write!(f, "MongoDB"),
+            DatabaseDriver::PostgreSQL => write!(f, "PostgreSQL"),
+            DatabaseDriver::SQLite => write!(f, "SQLite"),
+        }
+    }
+}
 // Cache
 // ------------------------------------------------------------
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct Cache {
     pub driver: CacheDriver,
     pub url: String,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
+pub enum CacheDriver {
+    #[default]
+    MemCached,
+    Redis,
+}
+impl fmt::Display for CacheDriver {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CacheDriver::MemCached => write!(f, "MemCached"),
+            CacheDriver::Redis => write!(f, "Redis"),
+        }
+    }
 }
 
 // =============================================================================
@@ -117,6 +148,22 @@ pub struct Authentication {
     pub email: EmailConfig,
     pub password: PasswordConfig,
 }
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
+pub enum AuthStrategy {
+    #[default]
+    Session,
+    Jwt,
+}
+
+impl fmt::Display for AuthStrategy {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            AuthStrategy::Session => write!(f, "Session"),
+            AuthStrategy::Jwt => write!(f, "Jwt"),
+        }
+    }
+}
+
 // JwtConfig
 // ------------------------------------------------------------
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]

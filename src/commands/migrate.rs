@@ -1,7 +1,9 @@
 use crate::{
-    commands::support,
     error::{Error, Result},
-    models::{configuration::AnzarConfiguration, database::DatabaseDriver},
+    shared::{
+        configuration::{AnzarConfiguration, DatabaseDriver},
+        support,
+    },
 };
 use owo_colors::OwoColorize;
 use sqlx::{Executor, Pool, Sqlite, SqlitePool};
