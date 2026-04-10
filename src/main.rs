@@ -33,14 +33,11 @@ enum Commands {
     #[command(about = "Show Anzar service status", long_about = None)]
     Status {},
 
-    #[command(about = "Generate database schemas", long_about = None)]
+    #[command(about = "Generate database schemas", long_about = None, visible_alias = "gen")]
     Generate {},
 
     #[command(about = "Apply database migrations", long_about = None)]
-    Migrate {
-        #[arg(short, long)]
-        name: Option<String>,
-    },
+    Migrate {},
 }
 
 #[tokio::main]
@@ -52,6 +49,6 @@ async fn main() -> Result<()> {
         Commands::Check { verbose } => commands::check::run(verbose),
         Commands::Status {} => commands::status::run(),
         Commands::Generate {} => commands::generate::run(),
-        Commands::Migrate { name } => commands::migrate::run().await,
+        Commands::Migrate {} => commands::migrate::run().await,
     }
 }

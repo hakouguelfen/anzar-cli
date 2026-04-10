@@ -9,9 +9,6 @@ use sqlx::{Executor, Pool, Sqlite, SqlitePool};
 pub async fn run() -> Result<()> {
     let config = support::load_config()?;
 
-    println!();
-    support::print_result("Connecting to database", true, None);
-
     let db: Pool<Sqlite> = match connect(config).await {
         Ok(pool) => pool,
         Err(e) => {
@@ -59,14 +56,17 @@ async fn connect(config: AnzarConfiguration) -> Result<Pool<Sqlite>, Error> {
             support::print_result(
                 "MongoDB is not supported",
                 false,
-                Some("switch to SQLite or Postgres in anzar.yml"),
+                Some("switch to SQLite or PostgreSQL in anzar.yml"),
             );
-            return Err(Error::InvalidConfig {
+            Err(Error::InvalidConfig {
                 key: "database.driver".to_string(),
                 reason: "MongoDB is not supported".to_string(),
-            });
+            })
         }
-        DatabaseDriver::PostgreSQL => {
+        DatabaseDriver::SQLite => {
+            println!();
+            support::print_result("Connecting to database", true, None);
+
             let cnx_string = config.database.connection_string;
 
             let pool = SqlitePool::connect(&cnx_string)
@@ -79,6 +79,11 @@ async fn connect(config: AnzarConfiguration) -> Result<Pool<Sqlite>, Error> {
 
             Ok(pool)
         }
-        DatabaseDriver::SQLite => todo!(),
+        DatabaseDriver::PostgreSQL => {
+            println!();
+            support::print_result("Connecting to database", true, None);
+
+            todo!()
+        }
     }
 }

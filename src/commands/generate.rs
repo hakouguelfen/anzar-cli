@@ -24,7 +24,7 @@ pub fn run() -> Result<()> {
         support::print_result(
             "MongoDB is not supported",
             false,
-            Some("switch to SQLite or Postgres in anzar.yml"),
+            Some("switch to SQLite or PostgreSQL in anzar.yml"),
         );
         return Ok(());
     }
