@@ -1,19 +1,4 @@
-name: {{NAME}}
-
-services:
-  auth:
-    image: hakouguelfen79/anzar
-    restart: always
-    ports:
-      - 3000:3000
-    user: 1000:1000
-    volumes:
-      - ./anzar.yml:/app/anzar.yml
-    depends_on:
-      cache:
-        condition: service_healthy
-
-  cache:
+cache:
     image: memcached:1.6-alpine
     restart: always
     ports:
@@ -27,7 +12,3 @@ services:
       - --conn-limit=1024
       - --memory-limit=64
       - --threads=4
-
-volumes:
-  {{NAME}}_volume:
-

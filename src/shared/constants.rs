@@ -4,9 +4,11 @@ pub const SESSION_AUTH: &str = include_str!("../templates/auth/session.yml");
 pub const CONFIG_TEMPLATE: &str = include_str!("../templates/configuration.yml");
 
 // Compose
-pub const MONGO_COMPOSE: &str = include_str!("../templates/db/mongo_compose.yml");
-pub const POSTGRES_COMPOSE: &str = include_str!("../templates/db/postgres_compose.yml");
-pub const SQLITE_COMPOSE: &str = include_str!("../templates/db/sqlite_compose.yml");
+pub const COMPOSE: &str = include_str!("../templates/compose.conf.yml");
+// pub const POSTGRES_COMPOSE: &str = include_str!("../templates/compose/postgres.yml");
+pub const MONGO_COMPOSE: &str = include_str!("../templates/compose/mongo.yml");
+pub const REDIS: &str = include_str!("../templates/compose/redis.yml");
+pub const MEMCACHED: &str = include_str!("../templates/compose/memcached.yml");
 
 // Databases
 pub const CREATE_USERS: &str = include_str!("../templates/db/sqlite/create_users.sql");

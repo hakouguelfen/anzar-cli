@@ -1,5 +1,5 @@
 use crate::error::Result;
-use crate::shared::configuration::{AuthStrategy, DatabaseDriver};
+use crate::shared::configuration::{AuthStrategy, CacheDriver, DatabaseDriver};
 use crate::shared::{constants, support};
 use std::fs;
 
@@ -23,8 +23,25 @@ pub fn run(app_name: Option<String>) -> Result<()> {
 
     build_anzar();
     build_compose(app_name)?;
+    print_post_init_message();
 
     Ok(())
+}
+fn print_post_init_message() {
+    let (os_hint, command) = support::openssl_instruction();
+
+    println!("\n{}", "Action required:".yellow().bold());
+    println!(
+        "  Generate a secure secret key and add it to {}:",
+        "anzar.yml".cyan()
+    );
+
+    println!("\n  {}", os_hint.dimmed());
+    println!("  {}", command.on_black().white().bold());
+
+    println!("\n  Then set it in {}:", "anzar.yml".cyan());
+    println!("  {}", "secret_key: <paste output here>".dimmed());
+    println!();
 }
 
 fn build_anzar() {
@@ -85,13 +102,29 @@ fn build_compose(app_name: Option<String>) -> Result<()> {
             .unwrap(),
     };
     println!("Initializing project: {}", name);
-    let compose_content = match config.database.driver {
+    let database = match config.database.driver {
         DatabaseDriver::MongoDB => constants::MONGO_COMPOSE.replace("{{NAME}}", &name),
-        DatabaseDriver::PostgreSQL => constants::POSTGRES_COMPOSE.replace("{{NAME}}", &name),
-        DatabaseDriver::SQLite => constants::SQLITE_COMPOSE.replace("{{NAME}}", &name),
+        DatabaseDriver::PostgreSQL => todo!(),
+        DatabaseDriver::SQLite => "".to_string(),
+    };
+    let cache = match config.database.cache.driver {
+        CacheDriver::MemCached => constants::MEMCACHED,
+        CacheDriver::Redis => constants::REDIS,
     };
 
-    match fs::write("compose.yml", compose_content) {
+    let db_depends_on = match config.database.driver {
+        DatabaseDriver::MongoDB => "\n      db:\n        condition: service_healthy",
+        DatabaseDriver::PostgreSQL => "\n      db:\n        condition: service_healthy",
+        DatabaseDriver::SQLite => "",
+    };
+
+    let content = constants::COMPOSE
+        .replace("{{NAME}}", &name)
+        .replace("{{DB_CONDITION}}", db_depends_on)
+        .replace("{{DATABASE}}", &database)
+        .replace("{{CACHE}}", cache);
+
+    match fs::write("compose.yml", content) {
         Ok(_) => println!("{} {}", "✓ Created".green().bold(), "compose.yml".cyan()),
         Err(e) => eprintln!("{} {}", "✗ Failed to create file:".red().bold(), e),
     }

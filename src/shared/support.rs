@@ -60,3 +60,30 @@ pub fn print_result(label: &str, passed: bool, hint: Option<&str>) {
         }
     }
 }
+
+pub fn openssl_instruction() -> (&'static str, &'static str) {
+    match std::env::consts::OS {
+        "windows" => {
+            // Check if openssl is actually available
+            let has_openssl = std::process::Command::new("openssl")
+                .arg("version")
+                .output()
+                .is_ok();
+
+            if has_openssl {
+                ("Windows (openssl found in PATH):", "$ openssl rand -hex 32")
+            } else {
+                (
+                    "Windows — openssl not found, alternatives:",
+                    "# Git Bash / WSL:\n  $ openssl rand -hex 32\n\n  \
+             # PowerShell:\n  $ [System.BitConverter]::ToString([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32)) -replace '-', ''",
+                )
+            }
+        }
+        "macos" => (
+            "macOS (openssl ships with Homebrew or LibreSSL via Xcode):",
+            "$ openssl rand -hex 32",
+        ),
+        _ => ("Linux:", "$ openssl rand -hex 32"),
+    }
+}

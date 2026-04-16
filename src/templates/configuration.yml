@@ -36,3 +36,8 @@ auth:
 # Server Configuration - OPTIONAL
 # =============================================================================
 # For further reading: [https://anzar_software.gitlab.io/docs/configuration/#server-configuration]
+server:
+  cors:
+    enabled: true
+    allowed_origins:
+      - "http://localhost:5000"

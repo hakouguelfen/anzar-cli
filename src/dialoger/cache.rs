@@ -13,7 +13,7 @@ pub fn select_cache() -> (CacheDriver, String) {
     let cache = caches[choice].clone();
     let uri = match caches[choice] {
         CacheDriver::MemCached => "memcache://cache:11211",
-        CacheDriver::Redis => todo!(),
+        CacheDriver::Redis => "redis://cache/",
     };
 
     (cache, uri.to_string())
