@@ -14,10 +14,13 @@ pub fn select_database() -> (DatabaseDriver, String) {
         .interact()
         .unwrap();
 
+    // TODO
+    // Ask for DB_USER and DB_PASSWORD
+
     let db = databases[choice].clone();
     let uri = match db {
-        DatabaseDriver::MongoDB => "mongodb://db:27017/default",
-        DatabaseDriver::PostgreSQL => todo!(),
+        DatabaseDriver::MongoDB => "mongodb://user:password@db:27017/mongodb?authSource=admin",
+        DatabaseDriver::PostgreSQL => "postgres://postgres:password@db:5432/postgres",
         DatabaseDriver::SQLite => "file:default.db",
     };
 

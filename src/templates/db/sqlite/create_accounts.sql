@@ -1,5 +1,5 @@
 -- Add migration script here
-CREATE TABLE account (
+CREATE TABLE accounts (
     id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
     userId TEXT NOT NULL,
     password TEXT NOT NULL,
@@ -9,4 +9,4 @@ CREATE TABLE account (
     FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_account_userId ON account(userId);
+CREATE INDEX idx_account_userId ON accounts(userId);

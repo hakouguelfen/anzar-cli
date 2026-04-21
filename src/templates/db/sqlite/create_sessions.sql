@@ -1,5 +1,5 @@
 -- Add migration script here
-CREATE TABLE session (
+CREATE TABLE sessions (
     id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
     userId TEXT NOT NULL,
     issuedAt DATETIME NOT NULL DEFAULT (datetime('now')),
@@ -10,5 +10,5 @@ CREATE TABLE session (
     FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_session_token ON session(token);
-CREATE INDEX idx_session_userId ON session(userId);
+CREATE INDEX idx_session_token ON sessions(token);
+CREATE INDEX idx_session_userId ON sessions(userId);

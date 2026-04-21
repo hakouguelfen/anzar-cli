@@ -2,7 +2,6 @@ name: {{NAME}}
 services:
   auth:
     image: hakouguelfen79/anzar
-    restart: always
     ports:
       - 3000:3000
     user: 1000:1000

@@ -104,7 +104,7 @@ fn build_compose(app_name: Option<String>) -> Result<()> {
     println!("Initializing project: {}", name);
     let database = match config.database.driver {
         DatabaseDriver::MongoDB => constants::MONGO_COMPOSE.replace("{{NAME}}", &name),
-        DatabaseDriver::PostgreSQL => todo!(),
+        DatabaseDriver::PostgreSQL => constants::POSTGRES_COMPOSE.replace("{{NAME}}", &name),
         DatabaseDriver::SQLite => "".to_string(),
     };
     let cache = match config.database.cache.driver {

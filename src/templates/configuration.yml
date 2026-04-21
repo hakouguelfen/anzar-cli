@@ -19,7 +19,7 @@ database:
 # Security Configuration - REQUIRED
 # =============================================================================
 security:
-  secret_key: "UPDATE_THIS_WITH_A_CPSR_CHARS"
+  secret_key: "REPLACE_THIS_WITH_A_CRYPTOGRAPHIC_SECURE_RANDOM_NUMBER"
   headers:
     - ["X-Content-Type-Options", "nosniff"]
     - ["Content-Type", "application/json"]

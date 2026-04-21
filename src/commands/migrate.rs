@@ -6,12 +6,17 @@ use crate::{
     },
 };
 use owo_colors::OwoColorize;
-use sqlx::{Executor, Pool, Sqlite, SqlitePool, migrate::Migrator};
+use sqlx::{Executor, Pool, SqlitePool, migrate::Migrator, postgres::PgPoolOptions};
+
+enum DatabasePool {
+    Sqlite(Pool<sqlx::Sqlite>),
+    Postgres(Pool<sqlx::Postgres>),
+}
 
 pub async fn run() -> Result<()> {
     let config = support::load_config()?;
 
-    let db: Pool<Sqlite> = match connect(config).await {
+    let database_pool: DatabasePool = match connect(config).await {
         Ok(pool) => pool,
         Err(e) => {
             support::print_result(
@@ -36,7 +41,12 @@ pub async fn run() -> Result<()> {
     }
 
     let migrator = Migrator::new(path).await?;
-    match migrator.run(&db).await {
+    let response = match database_pool {
+        DatabasePool::Sqlite(pool) => migrator.run(&pool).await,
+        DatabasePool::Postgres(pool) => migrator.run(&pool).await,
+    };
+
+    match response {
         Ok(_) => {
             support::print_result("Migrations applied", true, None);
             println!();
@@ -63,7 +73,7 @@ pub async fn run() -> Result<()> {
     Ok(())
 }
 
-async fn connect(config: AnzarConfiguration) -> Result<Pool<Sqlite>, Error> {
+async fn connect(config: AnzarConfiguration) -> Result<DatabasePool, Error> {
     match config.database.driver {
         DatabaseDriver::MongoDB => {
             support::print_result(
@@ -80,9 +90,9 @@ async fn connect(config: AnzarConfiguration) -> Result<Pool<Sqlite>, Error> {
             println!();
             support::print_result("Connecting to database", true, None);
 
-            let cnx_string = config.database.connection_string;
+            let conn = config.database.connection_string;
 
-            let pool = SqlitePool::connect(&cnx_string)
+            let pool = SqlitePool::connect(&conn)
                 .await
                 .map_err(|e| Error::Other(e.to_string()))?;
 
@@ -90,13 +100,24 @@ async fn connect(config: AnzarConfiguration) -> Result<Pool<Sqlite>, Error> {
                 .await
                 .map_err(|e| Error::Other(e.to_string()))?;
 
-            Ok(pool)
+            Ok(DatabasePool::Sqlite(pool))
         }
         DatabaseDriver::PostgreSQL => {
             println!();
             support::print_result("Connecting to database", true, None);
 
-            todo!()
+            let conn = config
+                .database
+                .connection_string
+                .replace("@db", "@localhost");
+
+            let pool = PgPoolOptions::new()
+                .max_connections(5)
+                .connect(&conn)
+                .await
+                .map_err(|e| Error::Other(e.to_string()))?;
+
+            Ok(DatabasePool::Postgres(pool))
         }
     }
 }
