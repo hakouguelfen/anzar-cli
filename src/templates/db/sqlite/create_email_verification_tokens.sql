@@ -7,7 +7,7 @@ CREATE TABLE email_verification_tokens (
     usedAt DATETIME,
     token TEXT NOT NULL,
 
-    FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_email_verification_token_token ON email_verification_tokens(token);

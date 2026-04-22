@@ -2,14 +2,12 @@
 CREATE TABLE refresh_tokens (
     id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
     userId TEXT NOT NULL,
-    issuedAt DATETIME,
     issuedAt DATETIME NOT NULL DEFAULT (datetime('now')),
     expiresAt DATETIME,
     usedAt DATETIME,
     jti TEXT NOT NULL,
-    token TEXT NOT NULL,
 
-    FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_refresh_token_jti ON refresh_tokens(jti);

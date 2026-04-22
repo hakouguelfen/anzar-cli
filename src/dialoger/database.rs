@@ -1,6 +1,7 @@
 use crate::shared::support;
 use crate::{shared::configuration::DatabaseDriver, theme::theme};
 use dialoguer::{Input, Password, Select};
+use owo_colors::OwoColorize;
 use std::fs::OpenOptions;
 use std::io::Write;
 
@@ -21,12 +22,44 @@ pub fn select_database() -> (DatabaseDriver, String) {
     if driver == DatabaseDriver::SQLite {
         let db_path: String = Input::with_theme(&theme())
             .with_prompt("  › file path")
-            .default("data.db".to_string())
+            .default("data/data.db".to_string())
             .show_default(true)
+            .validate_with(|input: &String| -> Result<(), &str> {
+                let path = std::path::Path::new(input);
+
+                // must have a parent folder (not just a filename)
+                if path
+                    .parent()
+                    .map(|p| p.as_os_str().is_empty())
+                    .unwrap_or(true)
+                {
+                    return Err("must include a folder, e.g. data/data.db");
+                }
+
+                // must have .db extension
+                match path.extension().and_then(|e| e.to_str()) {
+                    Some("db") => Ok(()),
+                    _ => Err("file must have a .db extension, e.g. data/anzar.db"),
+                }
+            })
             .interact_text()
             .unwrap();
+
+        println!(
+            "\n  {} {}\n  {} {}\n",
+            "⚠️".yellow(),
+            "Important:".bold().yellow(),
+            "→".yellow(),
+            format!(
+                "Make sure `{}` exists before starting the container",
+                db_path.cyan()
+            )
+            .bold()
+            .white()
+        );
+
         write_env_file(&driver, "", "", &db_path);
-        return (driver, format!("file:{db_path}"));
+        return (driver, format!("/app/{db_path}"));
     }
 
     let db_user: String = Input::with_theme(&theme())

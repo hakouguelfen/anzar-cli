@@ -7,7 +7,7 @@ CREATE TABLE password_reset_tokens (
     usedAt DATETIME,
     token TEXT NOT NULL,
 
-    FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_password_reset_token_token ON password_reset_tokens(token);

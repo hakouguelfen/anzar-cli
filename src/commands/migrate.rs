@@ -13,10 +13,10 @@ enum DatabasePool {
     Postgres(Pool<sqlx::Postgres>),
 }
 
-pub async fn run() -> Result<()> {
+pub async fn run(path: Option<String>) -> Result<()> {
     let config = support::load_config()?;
 
-    let database_pool: DatabasePool = match connect(config).await {
+    let database_pool: DatabasePool = match connect(config, path).await {
         Ok(pool) => pool,
         Err(e) => {
             support::print_result(
@@ -73,7 +73,7 @@ pub async fn run() -> Result<()> {
     Ok(())
 }
 
-async fn connect(config: AnzarConfiguration) -> Result<DatabasePool, Error> {
+async fn connect(config: AnzarConfiguration, path: Option<String>) -> Result<DatabasePool, Error> {
     match config.database.driver {
         DatabaseDriver::MongoDB => {
             support::print_result(
@@ -90,17 +90,36 @@ async fn connect(config: AnzarConfiguration) -> Result<DatabasePool, Error> {
             println!();
             support::print_result("Connecting to database", true, None);
 
-            let conn = config.database.connection_string;
+            match path {
+                None => {
+                    support::print_result(
+                        "Error: SQLite requires a local file path",
+                        false,
+                        Some("anzar migrate --path data/data.db)"),
+                    );
+                    std::process::exit(1);
+                }
+                Some(path) => {
+                    let pool = SqlitePool::connect(&path)
+                        .await
+                        .map_err(|e| {
+                            support::print_result(
+                                "Failed to connect",
+                                false,
+                                Some(&format!("check {path} is a valid path — {}", e)),
+                            );
 
-            let pool = SqlitePool::connect(&conn)
-                .await
-                .map_err(|e| Error::Other(e.to_string()))?;
+                            std::process::exit(1);
+                        })
+                        .unwrap();
 
-            pool.execute("PRAGMA foreign_keys = ON;")
-                .await
-                .map_err(|e| Error::Other(e.to_string()))?;
+                    pool.execute("PRAGMA foreign_keys = ON;")
+                        .await
+                        .map_err(|e| Error::Other(e.to_string()))?;
 
-            Ok(DatabasePool::Sqlite(pool))
+                    Ok(DatabasePool::Sqlite(pool))
+                }
+            }
         }
         DatabaseDriver::PostgreSQL => {
             println!();

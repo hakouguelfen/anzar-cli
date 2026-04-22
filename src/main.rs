@@ -37,7 +37,10 @@ enum Commands {
     Generate {},
 
     #[command(about = "Apply database migrations", long_about = None)]
-    Migrate {},
+    Migrate {
+        #[arg(short, long)]
+        path: Option<String>,
+    },
 }
 
 #[tokio::main]
@@ -49,6 +52,6 @@ async fn main() -> Result<()> {
         Commands::Check { verbose } => commands::check::run(verbose),
         Commands::Status {} => commands::status::run(),
         Commands::Generate {} => commands::generate::run(),
-        Commands::Migrate {} => commands::migrate::run().await,
+        Commands::Migrate { path } => commands::migrate::run(path).await,
     }
 }

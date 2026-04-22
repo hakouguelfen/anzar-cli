@@ -6,7 +6,7 @@ services:
       - 3000:3000
     user: 1000:1000
     volumes:
-      - ./anzar.yml:/app/anzar.yml
+      - ./anzar.yml:/app/anzar.yml{{VOLUME}}
     depends_on:{{DB_CONDITION}}
       cache:
         condition: service_healthy

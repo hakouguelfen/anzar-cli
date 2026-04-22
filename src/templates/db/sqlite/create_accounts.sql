@@ -6,7 +6,7 @@ CREATE TABLE accounts (
     locked BOOLEAN NOT NULL DEFAULT 0,
     createdAt DATETIME NOT NULL DEFAULT (datetime('now')),
 
-    FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_account_userId ON accounts(userId);

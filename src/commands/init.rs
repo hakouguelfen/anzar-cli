@@ -100,9 +100,15 @@ fn build_compose(app_name: Option<String>) -> Result<()> {
         DatabaseDriver::PostgreSQL => "\n      db:\n        condition: service_healthy",
         DatabaseDriver::SQLite => "",
     };
+    let volume = match config.database.driver {
+        DatabaseDriver::MongoDB => "",
+        DatabaseDriver::PostgreSQL => "",
+        DatabaseDriver::SQLite => "\n      - ./data/:/app/data",
+    };
 
     let content = constants::COMPOSE
         .replace("{{NAME}}", &name)
+        .replace("{{VOLUME}}", volume)
         .replace("{{DB_CONDITION}}", db_depends_on)
         .replace("{{DATABASE}}", &database)
         .replace("{{CACHE}}", cache);

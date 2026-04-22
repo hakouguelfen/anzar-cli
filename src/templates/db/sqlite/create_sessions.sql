@@ -7,7 +7,7 @@ CREATE TABLE sessions (
     usedAt DATETIME,
     token TEXT NOT NULL,
 
-    FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_session_token ON sessions(token);
