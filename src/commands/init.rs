@@ -27,22 +27,6 @@ pub fn run(app_name: Option<String>) -> Result<()> {
 
     Ok(())
 }
-fn print_post_init_message() {
-    let (os_hint, command) = support::openssl_instruction();
-
-    println!("\n{}", "Action required:".yellow().bold());
-    println!(
-        "  Generate a secure secret key and add it to {}:",
-        "anzar.yml".cyan()
-    );
-
-    println!("\n  {}", os_hint.dimmed());
-    println!("  {}", command.on_black().white().bold());
-
-    println!("\n  Then set it in {}:", "anzar.yml".cyan());
-    println!("  {}", "secret_key: <paste output here>".dimmed());
-    println!();
-}
 
 fn build_anzar() {
     if std::path::Path::new("anzar.yml").exists() {
@@ -101,7 +85,6 @@ fn build_compose(app_name: Option<String>) -> Result<()> {
             .interact_text()
             .unwrap(),
     };
-    println!("Initializing project: {}", name);
     let database = match config.database.driver {
         DatabaseDriver::MongoDB => constants::MONGO_COMPOSE.replace("{{NAME}}", &name),
         DatabaseDriver::PostgreSQL => constants::POSTGRES_COMPOSE.replace("{{NAME}}", &name),
@@ -130,4 +113,21 @@ fn build_compose(app_name: Option<String>) -> Result<()> {
     }
 
     Ok(())
+}
+
+fn print_post_init_message() {
+    let (os_hint, command) = support::openssl_instruction();
+
+    println!("\n{}", "Action required:".yellow().bold());
+    println!(
+        "  Generate a secure secret key and add it to {}:",
+        "anzar.yml".cyan()
+    );
+
+    println!("\n  {}", os_hint.dimmed());
+    println!("  {}", command.on_black().white().bold());
+
+    println!("\n  Then set it in {}:", "anzar.yml".cyan());
+    println!("  {}", "secret_key: <paste output here>".dimmed());
+    println!();
 }

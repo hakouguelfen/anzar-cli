@@ -63,7 +63,7 @@ pub const fn session_tables(db: DatabaseDriver) -> [(&'static str, &'static str)
                 "anzar_create_email_verification_tokens",
             ),
         ],
-        DatabaseDriver::MongoDB => todo!(),
+        DatabaseDriver::MongoDB => unreachable!(),
     }
 }
 
@@ -95,6 +95,6 @@ pub const fn jwt_tables(db: DatabaseDriver) -> [(&'static str, &'static str); 5]
                 "anzar_create_email_verification_tokens",
             ),
         ],
-        DatabaseDriver::MongoDB => todo!(),
+        DatabaseDriver::MongoDB => unreachable!(),
     }
 }
