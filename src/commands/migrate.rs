@@ -6,7 +6,7 @@ use crate::{
     },
 };
 use owo_colors::OwoColorize;
-use sqlx::{Executor, Pool, SqlitePool, migrate::Migrator, postgres::PgPoolOptions};
+use sqlx::{Executor, Pool, migrate::Migrator, postgres::PgPoolOptions, sqlite::SqlitePoolOptions};
 
 enum DatabasePool {
     Sqlite(Pool<sqlx::Sqlite>),
@@ -16,31 +16,34 @@ enum DatabasePool {
 pub async fn run(path: Option<String>) -> Result<()> {
     let config = support::load_config()?;
 
+    let migration_path = std::path::Path::new("migrations");
+    if !migration_path.exists() {
+        support::print_result(
+            "No migrations directory found",
+            false,
+            Some(&format!(
+                "create a ./migrations directory by running ( {} )",
+                "anzar generate".bold().white()
+            )),
+        );
+        return Ok(());
+    }
+
     let database_pool: DatabasePool = match connect(config, path).await {
         Ok(pool) => pool,
         Err(e) => {
             support::print_result(
                 "Failed to connect",
                 false,
-                Some(&format!("check connection_string in anzar.yml — {}", e)),
+                // Some(&format!("check connection_string in anzar.yml — {}", e)),
+                Some(&e.to_string()),
             );
             return Ok(());
         }
     };
 
     support::print_result("Running migrations", true, None);
-
-    let path = std::path::Path::new("migrations");
-    if !path.exists() {
-        support::print_result(
-            "Migrations already exist",
-            false,
-            Some("delete existing anzar_create_* files to regenerate"),
-        );
-        return Ok(());
-    }
-
-    let migrator = Migrator::new(path).await?;
+    let migrator = Migrator::new(migration_path).await?;
     let response = match database_pool {
         DatabasePool::Sqlite(pool) => migrator.run(&pool).await,
         DatabasePool::Postgres(pool) => migrator.run(&pool).await,
@@ -87,42 +90,39 @@ async fn connect(config: AnzarConfiguration, path: Option<String>) -> Result<Dat
             })
         }
         DatabaseDriver::SQLite => {
-            println!();
             support::print_result("Connecting to database", true, None);
 
-            match path {
+            let path = match path {
+                Some(p) => p,
                 None => {
-                    support::print_result(
-                        "Error: SQLite requires a local file path",
-                        false,
-                        Some("anzar migrate --path data/data.db)"),
-                    );
-                    std::process::exit(1);
+                    return Err(Error::InvalidConfig {
+                        key: "path".to_string(),
+                        reason: format!(
+                            "SQLite requires a file path — run: {}",
+                            "anzar migrate --path data/data.db".bold().white()
+                        ),
+                    });
                 }
-                Some(path) => {
-                    let pool = SqlitePool::connect(&path)
-                        .await
-                        .map_err(|e| {
-                            support::print_result(
-                                "Failed to connect",
-                                false,
-                                Some(&format!("check {path} is a valid path — {}", e)),
-                            );
+            };
 
-                            std::process::exit(1);
-                        })
-                        .unwrap();
+            let pool = SqlitePoolOptions::new()
+                .after_connect(|conn, _| {
+                    Box::pin(async move {
+                        conn.execute("PRAGMA foreign_keys = ON;").await?;
+                        Ok(())
+                    })
+                })
+                .connect(&path)
+                .await
+                .map_err(|e| Error::InvalidConfig {
+                    key: "path".to_string(),
+                    reason: format!("check {path} is a valid path — {e}"),
+                })?;
 
-                    pool.execute("PRAGMA foreign_keys = ON;")
-                        .await
-                        .map_err(|e| Error::Other(e.to_string()))?;
-
-                    Ok(DatabasePool::Sqlite(pool))
-                }
-            }
+            Ok(DatabasePool::Sqlite(pool))
         }
         DatabaseDriver::PostgreSQL => {
-            println!();
+            // println!();
             support::print_result("Connecting to database", true, None);
 
             let conn = config
@@ -130,11 +130,26 @@ async fn connect(config: AnzarConfiguration, path: Option<String>) -> Result<Dat
                 .connection_string
                 .replace("@db", "@localhost");
 
+            // Probe TCP before handing off to sqlx so we can distinguish
+            let is_reachable = std::net::TcpStream::connect("localhost:5432").is_ok();
+
             let pool = PgPoolOptions::new()
                 .max_connections(5)
                 .connect(&conn)
                 .await
-                .map_err(|e| Error::Other(e.to_string()))?;
+                .map_err(|_| {
+                    if !is_reachable {
+                        Error::Other(format!(
+                            "PostgreSQL is not running — start it with {}",
+                            "docker compose up -d".bold().white(),
+                        ))
+                    } else {
+                        Error::Other(format!(
+                            "invalid connection string — check {} in anzar.yml",
+                            "database.connection_string".bold().white(),
+                        ))
+                    }
+                })?;
 
             Ok(DatabasePool::Postgres(pool))
         }
